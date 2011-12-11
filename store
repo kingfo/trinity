@@ -1,0 +1,25 @@
+本地缓存存储结构
+================
+
+v0.0.1
+------
+
+	hash:
+		[
+			channel-1,
+			channel-2,
+			channel-3,
+			...,
+			channel-N
+		],
+	map:
+		{
+			channel-1 : 
+				{
+					getway:
+					subnet:
+					data:
+				}
+		}
+		
+	

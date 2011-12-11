@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayList;
+			
+			import org.jasmineflex.jasmine;
+			
+			[Bindable]
+			public var flexReporter:TrivialFlexReporter = new TrivialFlexReporter();
+					
+			[Bindable]
+			public var autoExecute:Boolean = false;
+			
+			public function execute() {
+				setTimeout(function() {jasmine.getEnv().execute();}, 0);
+			}
+			
+			private function getBackgroundColor(result) : uint {
+				if(result == "passed")
+					return 0xddffdd;
+				else if(result == "failed")
+					return 0xffdddd;
+				
+				return 0xDDDDDD;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:addedToStage>
+		jasmine.getEnv().addReporter(flexReporter);
+		if(autoExecute)
+			execute();
+	</s:addedToStage>
+	
+	<s:Scroller width="100%" height="100%">
+		<s:VGroup width="100%" height="100%" top="10">
+		
+			<s:Group width="100%">
+				<s:Rect width="100%" height="30" left="15" right="10">
+					<s:fill>
+						<s:SolidColor color="#FFEEFF"  />
+					</s:fill>
+				</s:Rect>
+				
+				<s:HGroup left="20" bottom="5">
+					<s:Label text="Jasmine-Flex" textDecoration="underline" fontSize="20" />
+					<s:Label text="{flexReporter.version}" height="100%" verticalAlign="bottom" />
+				</s:HGroup>
+				
+				<s:HGroup height="100%" verticalAlign="middle" right="15">
+					<s:Label text="Show" />
+					<s:CheckBox label="passed" change="flexReporter.showPassed(passed.selected)" id="passed" />
+					<s:CheckBox label="skipped" enabled="false" />
+				</s:HGroup>
+			</s:Group>
+			
+			<s:Group width="100%">
+				<s:BorderContainer width="100%" left="15" right="10" minHeight="0" borderColor="#808080" backgroundColor="{getBackgroundColor(flexReporter.overallSuccess)}">
+					<s:Group width="100%" height="30">
+						<s:HGroup left="10" height="100%" verticalAlign="bottom" bottom="5">
+							<s:Label text="{flexReporter.resultsMessage}" fontSize="16" />
+							<s:Label text="{flexReporter.endTime}" fontSize="10" />
+						</s:HGroup>
+						
+						<s:Label right="5" text="run all" height="100%" verticalAlign="bottom" bottom="5" />
+					</s:Group>
+				</s:BorderContainer>
+			</s:Group>
+			
+			<s:DataGroup width="100%" height="100%" dataProvider="{flexReporter.suites}" itemRenderer="org.jasmineflex.flexreporter.SuiteItemRenderer">
+				<s:layout>
+					<s:VerticalLayout gap="2" />
+				</s:layout>
+			</s:DataGroup>
+		</s:VGroup>
+	</s:Scroller>
+</s:Group>

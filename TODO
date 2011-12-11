@@ -1,0 +1,39 @@
+ 注意事项及改进计划
+--------------------
+ * [√]发布者定义 NetConnection , Storage 具体类。
+ * [√]保持 本地 同一 SharedObject 文件写操作唯一性，这是由于并发的写操作会造成崩溃(IE)或覆盖(!IE)。
+ * [√]保持每个 Flash 逐个的 LocalConnection 对象发送，这是由于并发 send 会有内存泄漏问题。
+ * [+]尽可能的将数据放置在 Storage 中;
+ * [+]同时尽可能减少本地消息广播;
+ * [+]一切数据采用尽可能采用被动获取方式，即通过的当前活动对象获取;
+ * [?]具体方式即采用会话方式
+ * [+]采用最新活动最先通知的广播。
+ * [+]空闲时清理信道。即由本地心跳发起的，发现最近操作时间长度允许，则通知 Master 进行信道清理
+ 
+ 待研究问题
+-------------
+ * [+]本地通信通过可以复合使用的交换数据格式
+ * [√]本地通信信道使用本地存储
+ * [+]Master 和 Node 直接的区别和界限以及竞争策略
+ * [+]任何外界操作在 Master 下直接执行及执行结果处理
+ * [+]任何外界操作在 Node 下执行及执行结果处理，
+ * [?]如何进行操作相似性运算
+ 
+ 
+ "宽进严出"
+ -----------
+  在指定 LocalConnection 的 client 的方法中，如果接受参数是泛类型的，则接受到的则必定是Object
+  
+  /////// sender
+  //...
+  var msg:MyClass = new MyClass();
+  msg.test = 123;
+  lc.send('_test','receive',msg);
+  
+  /////// receiver
+  //...
+  public function receive(msg:*){
+	trace(msg); // [object Object];
+	trace(msg is MyClass); // false;
+  }
+  

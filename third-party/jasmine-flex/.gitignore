@@ -1,0 +1,9 @@
+.idea/
+.svn/
+.DS_Store
+site/
+.bundle/
+.pairs
+bin-debug
+bin-release
+flex/lib/bin

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="org.asmine.core.jasmine"/>
+    <classEntry path="org.asmine.core.TrivialConsoleReporter"/>
+    <classEntry path="org.asmine.core.global.afterEach"/>
+    <classEntry path="org.asmine.core.global.xdescribe"/>
+    <classEntry path="org.asmine.core.global.xit"/>
+    <classEntry path="org.jasmineflex.global.waitsFor"/>
+    <classEntry path="org.jasmineflex.global.runs"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

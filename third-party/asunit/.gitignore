@@ -1,0 +1,15 @@
+asunit-2.0/bin
+asunit-2.5/bin
+asunit-3.0/bin
+asunit-3.0/bin-debug
+asunit-3.0/obj
+asunit-4.0/bin
+asunit-4.0/bin-debug
+asunit-4.0/obj
+html-template
+.DS_Store
+.actionScriptProperties
+.flexProperties
+.settings
+.project
+*~

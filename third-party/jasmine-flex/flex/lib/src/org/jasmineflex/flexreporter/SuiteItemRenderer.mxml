@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="false" width="100%">
+	
+	<fx:Script>
+		<![CDATA[
+			import org.jasmineflex.Spec;
+			import org.jasmineflex.Suite;
+			
+			private function getBackgroundColor(result) : uint {
+				if(data.isSuite) {
+					if(result == "passed")
+						return 0xddffdd;
+					else if(result == "failed")
+						return 0xffdddd;
+					
+					return 0xDDDDDD;
+				}
+				else if(data.isSpec) {
+					if(result == "passed")
+						return 0xbbffbb;
+					else if(result == "failed")
+						return 0xffbbbb;
+					
+					return 0xBBBBBB;
+				}
+				
+				return 0xFFFFFF;
+			}
+			
+			private function getBorderColor(result) : uint {
+				if(data.isSpec) {
+					if(result == "passed")
+						return 0x008000;
+					else if(result == "failed")
+						return 0xFF0000;
+				}
+				
+				return 0x888888;
+			}
+			
+			public static function getStackTrace(result) {
+				
+				var trace = result.trace;
+				
+				if("stack" in trace)
+					return trace.stack;
+				
+				if("getStackTrace" in trace)
+					return trace.getStackTrace();
+				
+				return "trace not found";
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:BorderContainer borderWeight="1" left="15" right="10" width="100%" minHeight="0" visible="{data.show}" includeInLayout="{data.show}" borderColor="{getBorderColor(data.result)}" backgroundColor="{getBackgroundColor(data.result)}" bottom="5">
+		
+		<s:VGroup width="100%" top="5" gap="2" >
+			<s:Group width="100%">
+				<s:Label text="{data.description}" left="15" fontSize="16" textDecoration="underline" />
+				<s:Label text="run" right="5" fontSize="16" />
+			</s:Group>
+			
+			<s:Group width="100%">
+				<s:DataGroup width="100%" dataProvider="{data.messages}" left="30" >
+					<s:layout>
+						<s:VerticalLayout gap="1" />
+					</s:layout>
+					<s:itemRenderer>
+						<fx:Component>
+							<s:ItemRenderer width="100%" autoDrawBackground="false">
+								<s:VGroup gap="2" width="100%">
+									<s:Label text="{data.message}" fontSize="16" />
+									<s:Group width="100%">
+										<s:BorderContainer width="100%" minHeight="0" left="10" borderColor="#FF0000" backgroundColor="#EEEEFF" right="15">
+											<s:Scroller width="100%" height="100">
+												<s:Group width="100%">
+													<s:Label width="100%" fontSize="16" text="{SuiteItemRenderer.getStackTrace(data)}" top="15" left="10" />
+												</s:Group>
+											</s:Scroller>
+										</s:BorderContainer>
+									</s:Group>
+								</s:VGroup>
+							</s:ItemRenderer>
+						</fx:Component>
+					</s:itemRenderer>
+				</s:DataGroup>
+			</s:Group>
+			
+			<s:Group width="100%">
+				<s:DataGroup width="100%" itemRenderer="org.jasmineflex.flexreporter.SuiteItemRenderer" dataProvider="{data.children}" left="5"  >
+					<s:layout>
+						<s:VerticalLayout gap="1" />
+					</s:layout>
+				</s:DataGroup>
+			</s:Group>
+		</s:VGroup>
+		
+	</s:BorderContainer>
+	
+</s:ItemRenderer>

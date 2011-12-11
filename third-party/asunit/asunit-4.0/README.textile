@@ -1,0 +1,6 @@
+
+h1. AsUnit 4.x
+
+This build of the AsUnit test framework works with Flash Players 9, 10 and Adobe AIR and any version of the Flex framework.
+
+

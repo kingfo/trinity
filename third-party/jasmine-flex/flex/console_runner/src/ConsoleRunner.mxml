@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" width="0" height="0">
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.setTimeout;
+			
+			import org.jasmineflex.*;
+			import org.jasmineflex.global.*;
+		]]>
+	</fx:Script>
+	
+	<fx:Script source="suites/BaseSpec.as" />
+	<fx:Script source="suites/EnvSpec.as" />
+	<fx:Script source="suites/SuiteSpec.as" />
+	<fx:Script source="suites/SpecSpec.as" /> 
+	<fx:Script source="suites/MatchersSpec.as" />
+	<fx:Script source="suites/QueueSpec.as" />
+	<fx:Script source="suites/RunnerSpec.as" />
+	<fx:Script source="suites/WaitsForBlockSpec.as" />
+	<fx:Script source="suites/MultiReporterSpec.as" />
+	<fx:Script source="suites/CustomMatchersSpec.as" />
+	<fx:Script source="suites/ExceptionsSpec.as" />
+	<fx:Script source="suites/NestedResultsSpec.as" />
+	<fx:Script source="suites/ReporterSpec.as" />
+	<fx:Script source="suites/SpySpec.as" />
+	<fx:Script source="suites/UtilSpec.as" />
+	<fx:Script source="suites/ExceptionsSpec.as" />
+	<fx:Script source="suites/SpecRunningSpec.as" />
+	<fx:Script source="suites/PrettyPrintSpec.as" />
+	<fx:Script source="suites/JsApiReporterSpec.as" />
+	<fx:Script source="suites/TrivialConsoleReporterSpec.as" /> 
+	
+	<s:applicationComplete>
+		
+		var completed = function(){exit()};
+		
+		jasmine.getEnv().addReporter(new TrivialTraceReporter());
+		jasmine.getEnv().addReporter(new TrivialCommandLineReporter(completed));
+		
+		jasmine.getEnv().execute();
+		
+	</s:applicationComplete>
+</s:WindowedApplication>

@@ -1,0 +1,9 @@
+[submodule "third-party/as3corelib"]
+	path = third-party/as3corelib
+	url = git://github.com/mikechambers/as3corelib.git
+[submodule "third-party/asunit"]
+	path = third-party/asunit
+	url = git://github.com/patternpark/asunit.git
+[submodule "third-party/jasmine-flex"]
+	path = third-party/jasmine-flex
+	url = git://github.com/BrianGenisio/jasmine-flex.git

@@ -1,0 +1,7 @@
+*.tmproj
+doc/*
+bin/*.swc
+bin/*.swf
+test/generated
+bin/generated
+pkg
