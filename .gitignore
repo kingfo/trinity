@@ -13,3 +13,5 @@ Thumbs.db
 .*proj
 .svn/
 *.swp
+*.as3proj
+obj/
