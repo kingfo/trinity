@@ -70,7 +70,7 @@ package trinity {
 			}
 			
 			result = save(archive);
-			trace('onChanged:' + 'info:' + info + ' key:' + key + ' oldValue:' + oldValue + ' data:' + data);
+			//trace('onChanged:' + 'info:' + info + ' key:' + key + ' oldValue:' + oldValue + ' data:' + data);
 			if (isInternal(data)) return;
 			callFunc(onChanged, { 
 									type:'storage', 
@@ -111,7 +111,7 @@ package trinity {
 			var so: SharedObject = getSharedObject();
 			so.clear();
 			save(createEmptyArchive());
-			trace('clear');
+			//trace('clear');
 		}
 		/**
 		 * 销毁本地存储
@@ -120,7 +120,7 @@ package trinity {
 			var so: SharedObject = getSharedObject();
 			so.clear();
 			save();
-			trace('destroy');
+			//trace('destroy');
 		}
 		
 		/**
@@ -176,7 +176,7 @@ package trinity {
 		protected function getSharedObject(): SharedObject {
 			var so:SharedObject = SharedObject.getLocal(DEFAULT_SHARED_NAME);
 			so.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
-			trace('onOpen');
+			//trace('onOpen');
 			callFunc(onOpen, {type:'open',info:DEFAULT_SHARED_NAME});
 			return so;
 		}
@@ -185,7 +185,7 @@ package trinity {
 		 * @param	event
 		 */
 		protected function onNetStatus(event: NetStatusEvent): void {
-			trace('onStatus:' + event.type);
+			//trace('onStatus:' + event.type);
 			callFunc(onStatus, {type:event.type, info:event.info.level } );
 		}
 		/**
@@ -223,13 +223,13 @@ package trinity {
 			try{
 				result = so.flush();
 	    	}catch (e:Error) {
-				trace('onError:' + e.message);
+				//trace('onError:' + e.message);
 				callFunc(onError, {type:'flushError', info:e.message, id:e.errorID } );
 			}
 			
 			switch(result) {
 				case SharedObjectFlushStatus.FLUSHED:
-					trace('onClose:' + result);
+					//trace('onClose:' + result);
 					callFunc(onClose, {type:result, info:DEFAULT_SHARED_NAME } );
 					return true;
 				break;
@@ -237,12 +237,12 @@ package trinity {
 					if (archive) {
 						key = archive.hash[archive.hash.length - 1];
 					}
-					trace('onPending:' + result);
+					//trace('onPending:' + result);
 					callFunc(onPending, {type:result, info:DEFAULT_SHARED_NAME, key:key } );
 					return false;
 				break;
 				default:
-					trace('onError:' + result);
+					//trace('onError:' + result);
 					callFunc(onError,{type:result,info:'Flash Player Could not write SharedObject to disk.',id:-1})
 					return false;
 			}
@@ -260,7 +260,7 @@ package trinity {
 			var archive: Object;
 			if (!so.data.hasOwnProperty("archive")) {
    				archive = createEmptyArchive();
-				trace('onCreation');
+				//trace('onCreation');
 				callFunc(onCreation,{type:'creation',info:DEFAULT_SHARED_NAME});
  			}else {
 				////	判断是否字节流

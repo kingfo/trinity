@@ -1,5 +1,4 @@
 package trinity.external {
-	import as3utils.object.isPlainObject;
 	import as3utils.string.isEmptyString;
 	import flash.external.ExternalInterface;
 	import trinity.utils.getObjectValue;

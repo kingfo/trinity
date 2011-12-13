@@ -12,28 +12,55 @@ package trinity.engine {
 		public function get cache():ChannelCache {
 			return _cache;
 		}
+		
+		public function get isConnecting():Boolean {
+			return _isConnecting;
+		}
 		/**
-		 * 当节点链接的时候回调
+		 * 当节点链接成功并加入网络的时候回调
+		 * 与 master 不同，node 加入网络并被 master 注册后才被触发
+		 * 接受以下形式函数:
+		 * onConnected();
+		 * onConnected(name:String);
 		 */
 		public var onConnected:Function;
 		/**
 		 * 当成为 master 节点的时候回调
+		 * 接受以下形式函数:
+		 * onMaster();
+		 * onMaster(name:String);
 		 */
 		public var onMaster:Function;
 		/**
 		 * 当发送消息成功的时候回调
+		 * 接受以下形式函数:
+		 * onSended();
+		 * onSended(type:String);
+		 * onSended(type:String, msg:String);
+		 * onSended(type:String, msg:String, request:*);
 		 */
 		public var onSended:Function;
 		/**
 		 * 当发送消息失败的时候回调
+		 * 接受以下形式函数:
+		 * onError();
+		 * onError(type:String);
+		 * onError(type:String, msg:String);
+		 * onError(type:String, msg:String, request:*);
 		 */
 		public var onError:Function;
 		/**
 		 * 当接收到指令执行时的回调
+		 * 接受以下形式函数:
+		 * onExecution();
+		 * onExecution(command:*);
 		 */
 		public var onExecution:Function;
 		/**
 		 * 当接收到消息的时候回调
+		 * 接受以下形式函数:
+		 * onReceived();
+		 * onReceived(request:*);
 		 */
 		public var onReceived:Function;
 		
@@ -44,6 +71,7 @@ package trinity.engine {
 		public function getGroup():String {
 			return this.group;
 		}
+		
 		
 		public function Engine(group:String, rate:Number = 1000) {
 			this.group = group.indexOf('_') == 0 ? group : '_' + group;
@@ -63,12 +91,7 @@ package trinity.engine {
 		public function connect():void {
 			kernel.connect(group);
 		}
-		/**
-		 * 关闭链接
-		 */
-		public function close():void {
-			kernel.close();
-		}
+		
 		/**
 		 * 获取状态
 		 *     当 1 时为 master 状态
@@ -91,23 +114,19 @@ package trinity.engine {
 		/**
 		 * 对所有节点进行广播
 		 * @param	data
-		 * @param	to
+		 * @param	to				不指定则全员广播
 		 */
-		public function fire(data:*,to:String = null ):void {
-			var request:ExchangeData = createRequest(ExchangeDataType.MESSAGE);
-			if (kernel.isMaster) {
-				if (!to) { // 广播
-					broadcast(request);
-					return;
-				}
-				// 单播
-				request.to = to;
-				send(request, onCallback);
+		public function fire(data:*, to:String = null ):void { // master 和 node 都适用
+			//trace('FIRE');
+			var request:Object = createEmptyRequest(ExchangeDataType.MESSAGE);
+			request.body = data;
+			if (!to) { // 广播 
+				broadcast(request);
 				return;
 			}
-			
-			forward(request); // 转发
-			
+			// 单播
+			request.to = to;
+			send(request, onCallback);
 		}
 		/**
 		 * 公开的接收其他节点的方法
@@ -115,25 +134,33 @@ package trinity.engine {
 		 */
 		public function receive(request:*):void {
 			if (!request) return;
+			////trace(request.type,request.from);
 			switch(request.type) {
 				case ExchangeDataType.SNIFFING: // 仅用于 Master
 					return;
 					break;
 				case ExchangeDataType.MESSAGE: 
-					if (request.to == kernel.name) {
+					if (request.to == kernel.name) { // 到达终点。任何节点到达本节点时，且不止于组内。
 						callFunc(onReceived, request);
-					}else if(request.to == null) {
+						return;
+					}  
+					
+					if (request.to == null) { // 未指定接收者则广播，一般来自组外转发。
 						broadcast(request);
-					}else {
-						forward(request);
+						callFunc(onReceived, request); // 既然广播则自己也需要接收一份
+						return;
 					}
+					
+					// ??? request.to != kernel.name
+					
 					break;
 				case ExchangeDataType.REGISTRATION: // 仅用于 Master
 					request.getway = kernel.name;
-					cache.addChannel(request.from,request.getway); 
+					cache.addChannel(request.from, request.getway);
+					join(request);
 					break;
 				case ExchangeDataType.EXECUTION:
-					if(kernel.isMaster)callFunc(onExecution, request.body);
+					if(kernel.isMaster && request.body)callFunc(onExecution, request.body);
 					break;
 				case ExchangeDataType.FORWARD: // 仅用于 Master
 					arguments.callee(request.body);
@@ -141,43 +168,72 @@ package trinity.engine {
 				case ExchangeDataType.EXIT: // 仅用于 Master
 					cache.removeChannel(request.body);
 					break;
+				case ExchangeDataType.JOIN:// 仅用于 node
+					_isConnecting = true;
+					callFunc(onConnected, kernel.name);
+					break;
 			}
 		}
 		/**
-		 * 广播消息 以下 2 种情况会被触发
+		 * 广播消息
+		 * 同通常认识的一样，广播来源方不会被通知
+		 * 以下 2 种情况会被触发
 		 * 	   当 fire 时 to 为 null 会触发
 		 *     当 receive 到 to 为 null 会触发 
 		 * @param	request
 		 */
 		public function broadcast(request:*):void {
-			var list:Array = cache.getSubnets(request.getway), i:int, len:int = list.length;
-			for (i = 0; i < len; i++ ) {
-				request.to = list[i];
-				send(request, onCallback);
+			if (request.getway == group) {// 如果是网关
+				var list:Array = cache.getSubnets(group) || [];
+				list = list.concat();
+				list.push(group); // 包含网关都应该收到通知
+				var i:int, len:int = list.length;
+				for (i = 0; i < len; i++ ) {
+					var name:String = list[i];
+					if (name == request.from) continue; //当然，自己需要除外
+					var req:Object = cloneRequest(request);
+					req.to = name;
+					send(req, onCallback);
+				}
+			}else {// 非当前网关 则无法广播 需要转发至原网关进行
+				forward(request);
 			}
 		}
 		/**
 		 * 转发消息
-		 *     对当前的 ExchangeData 进行再次封装成为 ExchangeData
+		 *     会对当前的 数据 进行再次封装
+		 * 		
 		 * @param	request
 		 */
 		public function forward(request:*):void {
-			var req:ExchangeData = createRequest(ExchangeDataType.FORWARD);
-			req.to = request.to || group;
-			req.body = request; //外面包一层
+			var req:Object = createEmptyRequest(ExchangeDataType.FORWARD);
+			if (request.to == kernel.name) return; // 这里同样要排除自己
+			
+			req.to = request.to || request.getway; //包含组内或组外转发
+			req.body = request; 
 			send(req, onCallback);
+			
 		}
 		
-		public function createRequest(type:Number):ExchangeData {
-			var request:ExchangeData = new ExchangeData();
-			request.from = kernel.name;
-			request.getway = group;
-			request.type = type;
-			return request;
+		/**
+		 * 创建不带 to 和 body 的交换请求
+		 * @param	type
+		 * @return
+		 */
+		public function createEmptyRequest(type:int):Object {
+			return ExchangeDataGenerator.generator(null,type,null,kernel.name,group);
 		}
 		
-		public function exit():void {
-			if (kernel.isMaster) {
+		public function cloneRequest(request:*):Object {
+			return ExchangeDataGenerator.generator(request['to'],
+													request['type'],
+													request['body'],
+													request['from'],
+													request['getway']);
+		}
+		
+		public function exit(force:Boolean = false ):void {
+			if (force || kernel.isMaster) {
 				kernel.close();
 			}else {
 				notifyExit(group,kernel.name);
@@ -185,30 +241,38 @@ package trinity.engine {
 		}
 		
 		public function notifyExit(masterName:String,from:String = null):void {
-			var request:ExchangeData = createRequest(ExchangeDataType.EXIT);
+			var request:Object = createEmptyRequest(ExchangeDataType.EXIT);
 			request.to = masterName;
-			request.from = kernel.name; 
 			request.body = from;
 			send(request, onCallback);
 		}
 		
-		
-		private function masterHandler(name:String):void {
-			breath.stop();
-			cache.addChannel(name);
-			callFunc(onMaster, name);
-			trace('I M MASTER!');
+		protected function onTimer(timer:Timer):void {
+			var a:Array = cache.getSubnets(group) || [];
+			breath.check(a.length);
+			var request:Object = createEmptyRequest(ExchangeDataType.SNIFFING);
+			request.to = group;
+			send(request, onCallback);
+			//trace('SNIFFING');
 		}
 		
-		private function connectedHandler(...args):void {
-			var a:Array = args.concat();
-			a.unshift(onConnected);
-			callFunc.apply(this, a);
-			if (!kernel.isMaster) {
-				register();
-				breath.start();
-			}
-			
+		
+		protected function register():void {
+			var request:Object = createEmptyRequest(ExchangeDataType.REGISTRATION);
+			request.to = group;
+			send(request, onCallback);
+			//trace('REGISTRATION');
+		}
+		
+		protected function checkSubnet():void {
+			broadcast(createEmptyRequest(ExchangeDataType.SNIFFING));
+		}
+		
+		protected function join(request:*):void {
+			var req:Object = createEmptyRequest(ExchangeDataType.JOIN);
+			req.to = request.from;
+			send(req, onCallback);
+			//trace('JOIN');
 		}
 		
 		protected function onCallback(type:String,msg:String,request:*):void {
@@ -237,27 +301,30 @@ package trinity.engine {
 			}
 		}
 		
-		private function onTimer(timer:Timer):void {
-			var a:Array = cache.getSubnets(group) || [];
-			breath.check(a.length);
-			var request:ExchangeData = new ExchangeData(group);
-			request.type = ExchangeDataType.SNIFFING;
-			trace('SNIFFING');
-			send(request, onCallback);
-			
+		
+		
+		private function masterHandler(name:String):void {
+			checkSubnet();
+			breath.stop();
+			cache.addChannel(name);
+			callFunc(onMaster, name);
+			//trace('I M MASTER!');
 		}
 		
-		private function register():void {
-			var request:ExchangeData = new ExchangeData(group);
-			request.type = ExchangeDataType.REGISTRATION;
-			request.from = kernel.name;
-			request.getway = group;
-			trace('REGISTRATION');
-			send(request, onCallback);
+		private function connectedHandler(...args):void {
+			var a:Array = args.concat();
+			a.unshift(onConnected);
+			if (!kernel.isMaster) {
+				register();
+				breath.start();
+			}else {
+				_isConnecting = true;
+				callFunc.apply(this, a); // node 需要等到 注册成功返回才算
+			}
 		}
 		
-		
-		private function send(request:ExchangeData, callback:Function):void {
+		private function send(request:Object, callback:Function):void {
+			if (!request || !request.to) return;
 			breath.later();
 			kernel.send(request.to, request, callback);
 		}
@@ -265,6 +332,7 @@ package trinity.engine {
 		
 		private var _cache:ChannelCache = new ChannelCache();
 		private var _isRunning:Boolean = false;
+		private var _isConnecting:Boolean = false;
 		
 		private var group:String;
 		private var kernel:Kernel;

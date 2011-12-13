@@ -5,12 +5,15 @@ package trinity.engine {
 	 */
 	public class ExchangeDataType {
 		
-		public static const MESSAGE:Number = 0;
-		public static const REGISTRATION:Number = 1;
-		public static const SNIFFING:Number = 2;
-		public static const FORWARD:Number = 3;
-		public static const EXECUTION:Number = 4;
-		public static const EXIT:Number = 5;
+		public static const MESSAGE:int = 0;
+		public static const REGISTRATION:int = 10;
+		public static const JOIN:int = 11;
+		
+		public static const SNIFFING:int = 20;
+		public static const FORWARD:int = 30;
+		public static const EXECUTION:int = 40;
+		public static const EXIT:int = 99;
+		
 		
 		
 		public function ExchangeDataType() {

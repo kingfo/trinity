@@ -61,8 +61,10 @@ package trinity.engine {
 		 */
 		public var onConnected:Function;
 		
+		public var onError:Function;
+		
 		public function Kernel(handler:String, client:IReceiver) {
-			privateName = guid('_');
+			 privateName = guid('_');
 			_sender = new Sender(handler);
 			_receiverProxy = new ReceiverProxy(client);
 		}
@@ -73,14 +75,18 @@ package trinity.engine {
 		 */
 		public function connect(channel:String, tag:uint = 1):void {
 			_status = tag;
+			if (tag == 1) attemptCount = 0;
 			if (_receiverProxy.connect(channel)) {
 				_name = channel;
 				if (isMaster) {
 					callFunc(onMaster, name);
 				}
-				callFunc(onConnected,name);
+				callFunc(onConnected, name);
 				return ;
 			}
+			attemptCount++
+			if (attemptCount > attemptTotal) return;
+			//if (tag == 0) privateName = guid('_');
 			arguments.callee.apply(this, [privateName,0]);
 			return ;
 		}
@@ -100,7 +106,8 @@ package trinity.engine {
 		private var privateName:String;
 		private var _sender:Sender;
 		private var _receiverProxy:ReceiverProxy;
-		
+		private var attemptCount:int = 0;
+		private var attemptTotal:int = 3;
 	}
 
 }

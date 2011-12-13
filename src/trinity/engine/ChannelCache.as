@@ -105,6 +105,7 @@ package trinity.engine {
 			var item:Object;
 			
 			item = map[channel];
+			if (!item) return true; 
 			if (item.subnets && item.subnets.length > 0) return false; // getway is not empty
 			
 			//update hash

@@ -28,7 +28,10 @@ package trinity.engine {
 				_isConnecting = true;
 				return isConnecting;
 			}catch (e:Error) {
-				
+				//trace(	'\n----------',
+						//'channel:' + channel +'\n',
+						//'message:' + e.message +'\n' ,
+						//'\n----------');
 			}
 			return _isConnecting = false;
 			
