@@ -7,5 +7,7 @@
 
 测试
 ----
-[Engine Test]()
-[Engine Test Source](/tree/master/test/as3/src)
+* [Engine Test](http://kingfo.github.com/trinity/test/as3/bin/TrinityTest.swf)
+* [Engine Test Source](https://github.com/kingfo/trinity/tree/master/test/as3/src)
+
+Copyright (c) 2008-2012 Kingfo. This software is licensed under the [MIT LICENSE](http://kingfo.github.com/trinity/MIT-LICENSE.txt).
