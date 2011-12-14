@@ -235,6 +235,7 @@ package trinity.engine {
 		public function exit(force:Boolean = false ):void {
 			if (force || kernel.isMaster) {
 				kernel.close();
+				_isConnecting = false;
 			}else {
 				notifyExit(group,kernel.name);
 			}

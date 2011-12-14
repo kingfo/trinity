@@ -121,7 +121,7 @@ describe('Engine', function():void {
 			};
 			waitsFor(function():Boolean {
 				return nodeA.isConnecting && nodeB.isConnecting;
-			}, 'node connect error', 3000 );
+			}, 'nodeA and nodeB isConnecting', 3000 );
 			runs(function():void { 
 				master.fire('hello,guys!');
 			} );
@@ -138,7 +138,7 @@ describe('Engine', function():void {
 			});
 			waitsFor(function():Boolean {
 				return master.isConnecting && nodeB.isConnecting;
-			}, 'node connect error', 3000 );
+			}, 'master and nodeB isConnecting', 6000 );
 			runs(function():void { 
 				nodeA.fire('hello,guys!');
 			} );
@@ -155,7 +155,7 @@ describe('Engine', function():void {
 			});
 			waitsFor(function():Boolean {
 				return master.isConnecting && nodeA.isConnecting;
-			}, 'node connect error', 3000 );
+			}, 'master and nodeA isConnecting', 9000 );
 			runs(function():void { 
 				nodeB.fire('hello,guys!');
 			} );
@@ -164,16 +164,16 @@ describe('Engine', function():void {
 		it('close', function():void { 
 			runs(function():void {
 				expect(nodeA.isConnecting).toBe(true);
-				nodeA.close();
+				nodeA.exit(true);
 				expect(nodeA.isConnecting).toBe(false);
 				
-				expect(nodeA.isConnecting).toBe(true);
-				nodeB.close();
-				expect(nodeA.isConnecting).toBe(false);
+				expect(nodeB.isConnecting).toBe(true);
+				nodeB.exit(true);
+				expect(nodeB.isConnecting).toBe(false);
 				
-				expect(nodeA.isConnecting).toBe(true);
-				master.close();
-				expect(nodeA.isConnecting).toBe(false);
+				expect(master.isConnecting).toBe(true);
+				master.exit(true);
+				expect(master.isConnecting).toBe(false);
 			});
 			
 		} );
