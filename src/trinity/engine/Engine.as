@@ -155,8 +155,8 @@ package trinity.engine {
 					
 					break;
 				case ExchangeDataType.REGISTRATION: // 仅用于 Master
-					request.getway = kernel.name;
-					cache.addChannel(request.from, request.getway);
+					request.gateway = kernel.name;
+					cache.addChannel(request.from, request.gateway);
 					join(request);
 					break;
 				case ExchangeDataType.EXECUTION:
@@ -183,7 +183,7 @@ package trinity.engine {
 		 * @param	request
 		 */
 		public function broadcast(request:*):void {
-			if (request.getway == group) {// 如果是网关
+			if (request.gateway == group) {// 如果是网关
 				var list:Array = cache.getSubnets(group) || [];
 				list = list.concat();
 				list.push(group); // 包含网关都应该收到通知
@@ -209,7 +209,7 @@ package trinity.engine {
 			var req:Object = createEmptyRequest(ExchangeDataType.FORWARD);
 			if (request.to == kernel.name) return; // 这里同样要排除自己
 			
-			req.to = request.to || request.getway; //包含组内或组外转发
+			req.to = request.to || request.gateway; //包含组内或组外转发
 			req.body = request; 
 			send(req, onCallback);
 			
@@ -229,7 +229,7 @@ package trinity.engine {
 													request['type'],
 													request['body'],
 													request['from'],
-													request['getway']);
+													request['gateway']);
 		}
 		
 		public function exit(force:Boolean = false ):void {
@@ -286,9 +286,9 @@ package trinity.engine {
 					// 消息 发送失败
 						if (request.type == ExchangeDataType.MESSAGE) callFunc(onError, type, msg, request);
 						
-						if ((request.getway && request.getway != group) || 
+						if ((request.gateway && request.gateway != group) || 
 							(!kernel.isMaster && request.to != group)) {
-							notifyExit(request.getway, request.to);
+							notifyExit(request.gateway, request.to);
 							return;
 						}
 						

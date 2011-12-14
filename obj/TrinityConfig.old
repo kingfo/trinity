@@ -16,13 +16,12 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2011/12/13'</value>
+      <value>'2011/12/14'</value>
     </define>
     <verbose-stacktraces>true</verbose-stacktraces>
     <source-path append="true">
       <path-element>D:\work\data\Lab\trinity\project\src</path-element>
       <path-element>D:\work\data\Lab\trinity\project\third-party\as3corelib\src</path-element>
-      <path-element>D:\work\data\Lab\trinity\project\third-party\asunit\asunit-3.0\src</path-element>
       <path-element>D:\apps\FlashDevelop4\Library\AS3\classes</path-element>
     </source-path>
   </compiler>

@@ -34,14 +34,15 @@ package trinity {
 			
 			AJBridgeLite.deploy(flashvars);
 			
-			var group:String;
-			group = getObjectValue(flashvars, 'group') || '_group';
+			var group:String = getObjectValue(flashvars, 'group') || '_group';
+			var debug:Boolean = getObjectValue(flashvars, 'debug');
 			
 			var engine:Engine;
 			engine = new Engine(group);
 			instance = new Trinity(engine);
 			
 			var storage:Storage = Storage.getInstance();
+			storage.useCompression(!debug);
 			
 			AJBridgeLite.addCallback(
 										'fire',						engine.fire,
@@ -74,7 +75,7 @@ package trinity {
 		}
 		
 		private function onStatus(type:String, msg:String, request:*):void {
-			AJBridgeLite.callJS({type:type,msg:msg,data:request.body});
+			AJBridgeLite.callJS({type:type,msg:msg,data:request});
 		}
 		
 		private function onMaster(name:String):void {

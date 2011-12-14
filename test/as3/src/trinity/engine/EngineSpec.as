@@ -40,7 +40,7 @@ describe('Engine', function():void {
 			master.onReceived = function(request:*):void {
 				expect(request).toBeDefined();
 				expect(request.to).toBe('_'+GROUP);
-				expect(request.getway).toBe('_'+GROUP);
+				expect(request.gateway).toBe('_'+GROUP);
 				expect(request.body.length).toBe(6);
 				//trace(request.body)
 			};
@@ -71,7 +71,7 @@ describe('Engine', function():void {
 		it('onSended', function():void {
 			node.onSended = function(type:String, msg:String, request:*):void {
 				expect(type).toBe('status');
-				expect(request.getway).toBe('_'+GROUP);
+				expect(request.gateway).toBe('_'+GROUP);
 				expect(request.to).toBeDefined();
 				expect(request.from).toBeDefined();
 			};
