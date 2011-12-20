@@ -94,7 +94,7 @@ package trinity.engine {
 		}
 		
 		public function send(to:String, request:*, callback:Function):Boolean {
-			if (to == name) return false;
+			//if (to == name) return false; // 交给业务层处理
 			return _sender.send(to, request, callback);
 		}
 		

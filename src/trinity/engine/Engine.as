@@ -190,7 +190,7 @@ package trinity.engine {
 				var i:int, len:int = list.length;
 				for (i = 0; i < len; i++ ) {
 					var name:String = list[i];
-					if (name == request.from) continue; //当然，自己需要除外
+					//if (name == request.from) continue; //交由业务层处理
 					var req:Object = cloneRequest(request);
 					req.to = name;
 					send(req, onCallback);
