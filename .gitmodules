@@ -7,3 +7,6 @@
 [submodule "third-party/jasmine-flex"]
 	path = third-party/jasmine-flex
 	url = git://github.com/BrianGenisio/jasmine-flex.git
+[submodule "docs/trinity.wiki"]
+	path = docs/trinity.wiki
+	url = git@github.com:kingfo/trinity.wiki.git
