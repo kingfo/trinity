@@ -1,0 +1,198 @@
+Use Trinity.js
+--------------
+
+### Configuration
+
+```javascript
+trinity.config(
+	{
+		group: '_group',                                            //当前公共组
+		debug: true,                                                //调试开关
+		base: 'PATH/TO/YOUR/TRINITY/FLASH/FILE.swf',                //Trintiy Flash 路径
+		flash:{
+			timeout: 20000,                                         //Flash等待加载最长时间 单位:毫秒(ms)
+			params:{                                                //支持部分 Flash 播放参数 [参考这里](http://docs.kissyui.com/docs/html/api/component/flash/practice/flashplayer-parameters.html)
+				wmode:'opaque',                                 
+				bgcolor:'0xFF0000'
+				devicefont:true,
+				base:'PATH/TO/YOUR/BASE/URI'
+				seamlesstabbing:true
+				hasPriority:true		
+			}
+			attributes:{                                            //除保留的 id 外其他的所有 flash html 元素属性
+				
+			}
+		}
+	}
+);
+```
+
+### Bootstrapping
+```javascript
+trinity.embed(this);
+```
+
+### Usage
+#### Local Application Network events (LAP events)
+
+##### Master Node
+
+```javascript
+trinity.onSWFReady(function(trinity){
+	
+});
+
+trinity.onMaster(function(name){
+
+});
+
+trinity.onJoin(function(name){
+	
+});
+trinity.onMessage(function(msg){
+
+});
+
+trinity.onStatus(function(protocol){
+	
+});
+trinity.onError(function(protocol){
+	
+});
+```
+
+##### Node
+
+```javascript
+trinity.onSWFReady(function(trinity){
+	
+});
+
+trinity.onJoin(function(name){
+	
+});
+trinity.onMessage(function(msg){
+
+});
+
+trinity.onStatus(function(protocol){
+	
+});
+trinity.onError(function(protocol){
+	
+});
+```
+
+#### Local Application Network API (LAP API)
+
+##### Broadcast
+```javascript
+// Master
+trinity.onStatus(function(protocol){
+	alert(protocol.from == trinity.name); //true;
+	alert(protocol.getway == trinity.group); //true;
+	alert(protocol.type == 0); //true;
+	alert(protocol.body == 'hello world!'); //true;
+});
+trinity.onMessage(function(msg){
+	alert(msg == 'hello world!'); // true
+});
+trinity.fire('hello world!');
+
+// Node
+trinity.onMessage(function(msg){
+	alert(msg == 'hello world!');// true
+});
+```
+
+
+```javascript
+// Master
+trinity.onMessage(function(msg){
+	alert(msg == 'hello world!'); // true
+});
+
+// Node
+trinity.onMessage(function(msg){
+	alert(msg == 'hello world!');// true
+});
+trinity.onStatus(function(protocol){
+	alert(protocol.from == trinity.name); //true;
+	alert(protocol.getway == trinity.group); //false;
+	alert(protocol.type == 0); //true;
+	alert(protocol.body == 'hello world!'); //true;
+});
+trinity.fire('hello world!');
+```
+
+
+##### Unicast
+```javascript
+// Master
+trinity.onStatus(function(protocol){
+	alert(protocol.from == trinity.name); //true;
+	alert(protocol.getway == trinity.group); //true;
+	alert(protocol.type == 0); //true;
+	alert(protocol.body == 'hello world!'); //true;
+});
+trinity.fire('hello world!',NODE_NAME);
+
+// Node
+trinity.onMessage(function(msg){
+	alert(msg == 'hello world!');
+});
+```
+
+
+```javascript
+// Master
+trinity.onMessage(function(msg){
+	alert(msg == 'hello world!');
+});
+
+// Node
+trinity.onStatus(function(protocol){
+	alert(protocol.from == trinity.name); //true;
+	alert(protocol.getway == trinity.group); //false;
+	alert(protocol.type == 0); //true;
+	alert(protocol.body == 'hello world!'); //true;
+});
+trinity.fire('hello world!',trinity.group);
+```
+
+##### Broadcast or Unicast Error
+```javascript
+trinity.fire('hello world!',NODE_NAME);
+trinity.onError(function(protocol){
+	alert(protocol.body == 'hello world!'); //true;
+	alert(protocol.to + ' is unlinked.' );
+	//...
+});
+```
+
+##### Storage
+```javascript
+// Master only
+trinity.setItem('key','value');
+trinity.onStorage(function (info,key,oldValue,newValue){
+	
+});
+trinity.onOpen(function (){
+	
+});
+trinity.onOpen(function (){
+	
+});
+trinity.onOpen(function (){
+	
+});
+trinity.onFlushError(function (){
+	
+});
+trinity.onFlushed(function (){
+	
+});
+trinity.onPending(function (){
+	
+});
+```

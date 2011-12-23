@@ -39,29 +39,45 @@ package trinity {
 			
 			var engine:Engine;
 			engine = new Engine(group);
-			instance = new Trinity(engine);
 			
 			var storage:Storage = Storage.getInstance();
 			storage.useCompression(!debug);
 			
-			AJBridgeLite.addCallback(
-										'fire',						engine.fire,
-										'getName',					engine.getName,
-										'getStatus',				engine.getStatus,
-										'getGroup',					engine.getGroup,
-										'exit',						engine.exit,
-										'connect',					engine.connect,
+			storage.onChanged = AJBridgeLite.callJS;
+			storage.onClose = AJBridgeLite.callJS;
+			storage.onCreation = AJBridgeLite.callJS;
+			storage.onError = AJBridgeLite.callJS;
+			storage.onOpen = AJBridgeLite.callJS;
+			storage.onPending = AJBridgeLite.callJS;
+			storage.onStatus = AJBridgeLite.callJS;
+			
+			instance = new Trinity(engine);
+			
+			AJBridgeLite.addCallback({
+										'fire':						engine.fire,
+										'getName':					engine.getName,
+										'getStatus':				engine.getStatus,
+										'getGroup':					engine.getGroup,
+										'exit':						engine.exit,
+										'connect':					engine.connect,
 										
-										'setItem',					storage.setItem,
-										'getItem',					storage.getItem,
-										'clear',					storage.clear,
-										'destroy',					storage.destroy,
-										'getSize',					storage.getSize,
-										'setSize',					storage.setSize,
-										'hasCompression',			storage.hasCompression,
-										'useCompression',			storage.useCompression,
-										'getModificationDate',		storage.getModificationDate
-									);
+										'setItem':					storage.setItem,
+										'getItem':					storage.getItem,
+										'clear':					storage.clear,
+										'destroy':					storage.destroy,
+										'getSize':					storage.getSize,
+										'setSize':					storage.setSize,
+										'hasCompression':			storage.hasCompression,
+										'useCompression':			storage.useCompression,
+										'getModificationDate':		storage.getModificationDate
+										
+										//,'transfer':					transfer
+			});
+			
+			//function transfer(data:*):void {
+				//AJBridgeLite.callJS({type:'transfer',data:data});
+			//}
+			
 			AJBridgeLite.ready();
 			return instance;
 		}
@@ -81,6 +97,7 @@ package trinity {
 		private function onMaster(name:String):void {
 			AJBridgeLite.callJS({type:'master',name:name});
 		}
+		
 		
 		private var _engine:Engine;
 		

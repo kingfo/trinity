@@ -1,4 +1,5 @@
 package trinity.external {
+	import as3utils.object.isPlainObject;
 	import as3utils.string.isEmptyString;
 	import flash.external.ExternalInterface;
 	import trinity.utils.getObjectValue;
@@ -35,11 +36,30 @@ package trinity.external {
 				name = callbacks[0];
 				if (isEmptyString(name)) continue;
 				func = callbacks[1] as Function;
-				if (func == null) continue;
 				_addCallback(name, func);
 			}
 			
-			function _addCallback(name:String,closure:Function):void {
+			
+			//if (len == 1) { // name-function hash对象
+				//callbacks = args[0];
+				//if (!isPlainObject(callbacks)) return false;
+				//for (name in callbacks) {
+					//_addCallback(name, callbacks[name] as Function);
+				//}
+			//}else if (len > 1) {
+				//like: addCallback(FunctionName,closure,...)
+				//a = args.concat();
+				//while (a.length) {
+					//callbacks = a.splice(0, 2);
+					//name = callbacks[0];
+					//if (isEmptyString(name)) continue;
+					//func = callbacks[1] as Function;
+					//_addCallback(name, func);
+				//}
+			//}
+			
+			function _addCallback(name:String, closure:Function):void {
+				if (closure == null) return;
 				try {
 					ExternalInterface.addCallback(name, closure);
 				}catch (e:Error) {
