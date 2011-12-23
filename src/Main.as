@@ -1,5 +1,6 @@
 package {
 	import flash.display.Sprite;
+	import flash.system.Security;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 	import trinity.Trinity;
@@ -11,6 +12,7 @@ package {
 	public class Main extends Sprite {
 		
 		public function Main():void {
+			Security.allowDomain('*');
 			timeid = setTimeout(init, 100);
 		}
 		
