@@ -71,7 +71,7 @@ package trinity {
 			
 			result = save(archive);
 			//trace('onChanged:' + 'info:' + info + ' key:' + key + ' oldValue:' + oldValue + ' data:' + data);
-			if (isInternal(data)) return;
+			if (isInternal(data) || !result) return;
 			callFunc(onChanged, { 
 									type:'storage', 
 									info:info,
@@ -230,7 +230,7 @@ package trinity {
 			switch(result) {
 				case SharedObjectFlushStatus.FLUSHED:
 					//trace('onClose:' + result);
-					callFunc(onClose, {type:result, info:DEFAULT_SHARED_NAME } );
+					//callFunc(onClose, {type:result, info:DEFAULT_SHARED_NAME } );
 					return true;
 				break;
 				case SharedObjectFlushStatus.PENDING:

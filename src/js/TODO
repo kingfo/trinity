@@ -177,22 +177,7 @@ trinity.setItem('key','value');
 trinity.onStorage(function (info,key,oldValue,newValue){
 	
 });
-trinity.onOpen(function (){
-	
-});
-trinity.onOpen(function (){
-	
-});
-trinity.onOpen(function (){
-	
-});
-trinity.onFlushError(function (){
-	
-});
-trinity.onFlushed(function (){
-	
-});
-trinity.onPending(function (){
-	
+trinity.onException(function(type,msg,data){
+
 });
 ```
