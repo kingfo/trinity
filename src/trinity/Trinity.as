@@ -24,7 +24,7 @@ package trinity {
 			engine.onError = onStatus;
 			engine.onReceived = onReceived;
 			
-			engine.connect();
+			
 		}
 		
 		static public function embed(container:DisplayObject):Trinity {
@@ -63,6 +63,7 @@ package trinity {
 										'getModificationDate',		storage.getModificationDate
 									);
 			AJBridgeLite.ready();
+			engine.connect();
 			return instance;
 		}
 		
